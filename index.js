@@ -1,12 +1,45 @@
 const inquirer = require('inquirer');
-const Manager = require('./lib/Manager.js');
 const Intern = require('./lib/Intern.js');
+const Manager = require('./lib/Manager.js');
 const Engineer = require('./lib/Engineer.js');
+const Page = require('./src/page-template.js');
+const { writeFile, copyFile } = require('./util/generate-page');
+const { default: Choices } = require('inquirer/lib/objects/choices.js');
 const teamMembers = [];
+let notDone = true;
 
+function showMenu(){
+  
+    return inquirer.prompt([
+      {
+        type: "list",
+        name: "choice",
+        message: "Choose one of the following",
+        choices: ["Create Intern", "Create Engineer", "Complete Team"],
+      },
+    ]).then((choice) => {
+      console.log (choice.choice);
+      
+        switch (choice.choice){
+          case "Create Intern":
+            createIntern();
+            break;
+          case "Create Engineer":
+            createEngineer();
+            break;
+          case "Complete Team":
+            //TODO - create HTML and exit
+            writeFile(Page(teamMembers));
+            copyFile();
+            break;
+
+        }    
+    });  
+ 
+}
 
 function createManager(){
-    inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'input',
             name: 'name',
@@ -23,12 +56,12 @@ function createManager(){
           {
             type: 'input',
             name: 'id',
-            message: "Enter the Manager's ID number. (Required)",
+            message: "Enter the Manager's id number. (Required)",
             validate: idInput => {
               if (idInput) {
                 return true;
               } else {
-                console.log("You need to enter the Manager's ID number");
+                console.log("You need to enter the manager's id number");
                 return false;
               }
             }
@@ -54,7 +87,7 @@ function createManager(){
               if (officeInput) {
                 return true;
               } else {
-                console.log("You need to enter the Manager's office number");
+                console.log("You need to enter the Manbager's office number");
                 return false;
               }
             }
@@ -62,11 +95,12 @@ function createManager(){
     ]).then(managerData => {
         let newManager = new Manager(managerData.name, managerData.id, managerData.email, managerData.officeNumber);  
         teamMembers.push(newManager);
+        
     })
 }
 
 function createIntern(){
-    inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'input',
             name: 'name',
@@ -83,12 +117,12 @@ function createIntern(){
           {
             type: 'input',
             name: 'id',
-            message: "Enter the Intern's ID number. (Required)",
+            message: "Enter the Intern's Id number. (Required)",
             validate: idInput => {
               if (idInput) {
                 return true;
               } else {
-                console.log("You need to enter the Intern's ID number");
+                console.log("You need to enter the Intern's Id number");
                 return false;
               }
             }
@@ -109,79 +143,82 @@ function createIntern(){
           {
             type: 'input',
             name: 'school',
-            message: "Please enter the name of the Intern's school",
-            validate: schoolInput => {
-              if (schoolInput) {
+            message: "Please enter the name of the intern's school",
+            validate: officeInput => {
+              if (officeInput) {
                 return true;
               } else {
-                console.log("You need to enter the name of the Intern's school");
+                console.log("You need to enter the intern's school's name");
                 return false;
               }
             }
           },
-        ]).then(internData => {
-            let newIntern = new Intern(internData.name, internData.id, internData.email, internData.school);  
-            teamMembers.push(newIntern);
-        })
-    }
+    ]).then(InternData => {
+        let newIntern = new Intern(InternData.name, InternData.id, InternData.email, InternData.school);  
+        teamMembers.push(newIntern);
+        showMenu();
+    })
+}
 
 function createEngineer(){
-    inquirer.prompt([
+    return inquirer.prompt([
         {
             type: 'input',
             name: 'name',
             message: "Enter the Engineer's name. (Required)",
             validate: nameInput => {
-                if (nameInput) {
+              if (nameInput) {
                 return true;
-                } else {
+              } else {
                 console.log("You need to enter the Engineer's name");
                 return false;
-                }
+              }
             }
-            },
-            {
+          },
+          {
             type: 'input',
             name: 'id',
-            message: "Enter the Engineer's ID number. (Required)",
+            message: "Enter the Engineer's Id number. (Required)",
             validate: idInput => {
-                if (idInput) {
+              if (idInput) {
                 return true;
-                } else {
-                console.log("You need to enter the Engineer's ID number");
+              } else {
+                console.log("You need to enter the Engineer's Id number");
                 return false;
-                }
+              }
             }
-            },
-            {
+          },
+          {
             type: 'input',
             name: 'email',
             message: "Enter the Engineer's email address. (Required)",
             validate: emailInput => {
-                if (emailInput) {
+              if (emailInput) {
                 return true;
-                } else {
+              } else {
                 console.log("You need to enter the Engineer's email address");
                 return false;
-                }
+              }
             }
-            },
-            {
+          },
+          {
             type: 'input',
             name: 'github',
-            message: "Please enter the Engineer's Github username",
-            validate: githubInput => {
-                if (githubInput) {
+            message: "Please enter the github username",
+            validate: officeInput => {
+              if (officeInput) {
                 return true;
-                } else {
-                console.log("You need to enter the the Engineer's Github username");
+              } else {
+                console.log("You need to enter the github username");
                 return false;
-                }
+              }
             }
-            },
-        ]).then(engineerData => {
-            let newEngineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);  
-            teamMembers.push(newEngineer);
-            console.log(teamMembers);
-        })
-    }
+          },
+    ]).then(engineerData => {
+        let newEngineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);  
+        teamMembers.push(newEngineer);
+        showMenu();
+    })
+}
+
+createManager().then(showMenu);

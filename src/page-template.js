@@ -1,29 +1,18 @@
-import { icon, library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
-import { findIconDefinition } from '@fortawesome/fontawesome-svg-core'
-
-library.add(fas)
-
-const glasses = findIconDefinition({ prefix: 'fas', iconName: 'glasses' })
-const coffeeCup = findIconDefinition({ prefix: 'fas', iconName: 'mug-hot' })
-const graduation = findIconDefinition({ prefix: 'fas', iconName: 'graduation-cap' })
-
 function generateCards(teamArrayIn){
+  console.log(teamArrayIn);
   let htmlOutput = "";
   for(let i = 0; i < teamArrayIn.length; i++){
-
-    //TODO  - copy card code here to create card for each team member
-    htmlOutput.add( `<div class="card">
+    htmlOutput += `<div class="col col-sm-4 mb-2">
+      <div class="card">
       <div class="card-header" bg-dark text-light><h4>${teamArrayIn[i].name}</h4><br>
-        <h3>${checkRole(teamArrayIn, i)}${teamArrayIn[i].role}</h3></div>
-      <div id="id">ID:${teamArrayIn[i].id}</div>
-      <div id="email">Email:${teamArrayIn[i].email}</div>
+        <h3 ><i class="${makeIcon(teamArrayIn, i)}"> &nbsp; </i>${teamArrayIn[i].getRole()}</h3></div>
+      <div id="id">ID:${teamArrayIn[i].getId()}</div>
+      <div id="email">Email:<a href="mailto:${teamArrayIn[i].getEmail()}">${teamArrayIn[i].getEmail()}</a></div>
       <div id="role">${checkRole(teamArrayIn, i)}</div>
-    </div> `).join();
-    //      - add this code to the htmlOutput
-  }
-    // return htmloutput as a product of this function
-  return htmlOutput;
+    </div>
+  </div> `;
+    }
+  return htmlOutput.toString();
 }
 
 module.exports = teamArray => {
@@ -35,51 +24,56 @@ module.exports = teamArray => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"/>
       <link rel="stylesheet" href="./style.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous"/>
       <title>My Team</title>
   </head>
   <header>
       <h1 id="header">My Team</h1>
   </header>
-  <body class="col-12 col-lg-9 d-flex flex-column">
-      <div class="m-5 row justify-content-around">
-          <div class="col-12 col-md-6 col-xl-3 mb-3">
-          ${generateCards(teamArray)}
-              
-          </div>
+  <body>
+    <main class="container">
+      <div class="row d-flex">
+            ${generateCards(teamArray)}
       </div>
-  <script src="./index.js"></script>
+      </main>
+  
   </body>
+
   <footer>
   </footer>
   </html>`;
 };
 
 function checkRole(arrayIn, indexIn){
-  switch(arrayIn[indexIn].role){
-    case "manager":
-      return` Office Number: ${arrayIn[indexIn].officeNumber}`;
+  console.log(arrayIn[indexIn].getRole());
+  switch(arrayIn[indexIn].getRole()){
+    case "Manager":
+      return `Office Number: ${arrayIn[indexIn].getOfficeNumber()}`;
       break;
-    case "intern":
-      return `School: ${arrayIn[indexIn].school}`;
+    case "Intern":
+      return `School: ${arrayIn[indexIn].getSchool()}`;
       break;
-    case "engineer":
-      let gitUrl = "https://github.com/" + arrayIn[indexIn].github;
-      return `<a class="ml-2 my-1 px-2 py-1 bg-secondary text-dark" href="https://github.com/${gitUrl}">${arrayIn[indexIn].github}</a>`;
+    case "Engineer":
+      let gitUrl = "https://github.com/" + arrayIn[indexIn].getGithub();
+      return `<a>GitHub:</a><a href="http://www.github.com/${arrayIn[indexIn].getGithub()}" target="_blank"> ${arrayIn[indexIn].getGithub()}</a>`;
     default:
       break;
   }
 }
+
 function makeIcon(arrayIn, indexIn){
-  switch(arrayIn[indexIn].role){
-    case "manager":
-      return icon(coffeeCup)
+  console.log(arrayIn[indexIn].getRole());
+  switch(arrayIn[indexIn].getRole()){
+    case "Manager":
+      return `fas fa-mug-hot`;
       break;
-      case "intern":
-      return icon(graduation);
+    case "Intern":
+      return `fas fa-user-graduate mr-1`;
       break;
-      case "engineer":
-        return icon(glasses);
-        default:
-          break;
+    case "Engineer":
+      return "fas fa-glasses mr-1";
+      break;
+    default:
+      break;
   }
 }
